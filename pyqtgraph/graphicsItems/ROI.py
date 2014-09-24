@@ -1801,7 +1801,7 @@ class PolyLineROI(ROI):
     ============== =============================================================
     
     """
-    def __init__(self, positions, closed=False, pos=None, **args):
+    def __init__(self, positions, closed=False, pos=None, addHandleDoubleClick=False, **args):
         
         if pos is None:
             pos = [0,0]
@@ -1811,6 +1811,7 @@ class PolyLineROI(ROI):
         ROI.__init__(self, pos, size=[1,1], **args)
         
         self.setPoints(positions)
+        self.addHandleDoubleClick = addHandleDoubleClick
         #for p in positions:
             #self.addFreeHandle(p)
          
@@ -1893,12 +1894,19 @@ class PolyLineROI(ROI):
             raise Exception("Either an event or a position must be given.")
         h1 = segment.handles[0]['item']
         h2 = segment.handles[1]['item']
-        
-        i = self.segments.index(segment)
-        h3 = self.addFreeHandle(pos, index=self.indexOfHandle(h2))
-        self.addSegment(h3, h2, index=i+1)
-        segment.replaceHandle(h2, h3)
-        
+
+        # Why does double Click evnet pos delivers the wrong coordinates???
+        if ev is None or not self.addHandleDoubleClick or ev.double():
+            pos = self.singleClickPos
+
+            i = self.segments.index(segment)
+            h3 = self.addFreeHandle(pos, index=self.indexOfHandle(h2))
+            self.addSegment(h3, h2, index=i + 1)
+            segment.replaceHandle(h2, h3)
+        else:
+            self.singleClickPos = pos
+            self.mouseClickEvent(ev)
+
     def removeHandle(self, handle, updateSegments=True):
         ROI.removeHandle(self, handle)
         handle.sigRemoveRequested.disconnect(self.removeHandle)
