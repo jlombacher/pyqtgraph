@@ -110,7 +110,7 @@ class ROI(GraphicsObject):
     sigClicked = QtCore.Signal(object, object)
     sigRemoveRequested = QtCore.Signal(object)
     
-    def __init__(self, pos, size=Point(1, 1), angle=0.0, invertible=False, maxBounds=None, snapSize=1.0, scaleSnap=False, translateSnap=False, rotateSnap=False, parent=None, pen=None, movable=True, removable=False):
+    def __init__(self, pos, size=Point(1, 1), angle=0.0, handleSize=5, invertible=False, maxBounds=None, snapSize=1.0, scaleSnap=False, translateSnap=False, rotateSnap=False, parent=None, pen=None, movable=True, removable=False):
         #QObjectWorkaround.__init__(self)
         GraphicsObject.__init__(self, parent)
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
@@ -138,7 +138,7 @@ class ROI(GraphicsObject):
         self.setZValue(10)
         self.isMoving = False
         
-        self.handleSize = 5
+        self.handleSize = handleSize
         self.invertible = invertible
         self.maxBounds = maxBounds
         
