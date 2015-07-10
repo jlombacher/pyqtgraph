@@ -1,11 +1,12 @@
-from ..Qt import QtCore, QtGui
-from ..python2_3 import sortList
 import weakref
+from ..Qt import QtCore, QtGui
+from ..python2_3 import sortList, cmp
 from ..Point import Point
 from .. import functions as fn
 from .. import ptime as ptime
 from .mouseEvents import *
 from .. import debug as debug
+
 
 if hasattr(QtCore, 'PYQT_VERSION'):
     try:
@@ -84,8 +85,8 @@ class GraphicsScene(QtGui.QGraphicsScene):
             cls._addressCache[sip.unwrapinstance(sip.cast(obj, QtGui.QGraphicsItem))] = obj
             
             
-    def __init__(self, clickRadius=2, moveDistance=5):
-        QtGui.QGraphicsScene.__init__(self)
+    def __init__(self, clickRadius=2, moveDistance=5, parent=None):
+        QtGui.QGraphicsScene.__init__(self, parent)
         self.setClickRadius(clickRadius)
         self.setMoveDistance(moveDistance)
         self.exportDirectory = None

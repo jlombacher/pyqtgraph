@@ -89,7 +89,7 @@ class ImageViewNode(Node):
 ## CtrlNode is just a convenience class that automatically creates its
 ## control widget based on a simple data structure.
 class UnsharpMaskNode(CtrlNode):
-    """Return the input data passed through pg.gaussianFilter."""
+    """Return the input data passed through an unsharp mask."""
     nodeName = "UnsharpMask"
     uiTemplate = [
         ('sigma',  'spin', {'value': 1.0, 'step': 1.0, 'range': [0.0, None]}),
@@ -127,7 +127,10 @@ class UnsharpMaskNode(CtrlNode):
 ## NodeLibrary:
 library = fclib.LIBRARY.copy() # start with the default node set
 library.addNodeType(ImageViewNode, [('Display',)])
-library.addNodeType(UnsharpMaskNode, [('Image',)])
+# Add the unsharp mask node to two locations in the menu to demonstrate
+# that we can create arbitrary menu structures
+library.addNodeType(UnsharpMaskNode, [('Image',), 
+                                      ('Submenu_test','submenu2','submenu3')])
 fc.setLibrary(library)
 
 

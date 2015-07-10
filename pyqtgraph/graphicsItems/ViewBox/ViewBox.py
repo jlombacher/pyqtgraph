@@ -1,15 +1,15 @@
-from ...Qt import QtGui, QtCore
-from ...python2_3 import sortList
+import weakref
+import sys
+from copy import deepcopy
 import numpy as np
+from ...Qt import QtGui, QtCore
+from ...python2_3 import sortList, basestring, cmp
 from ...Point import Point
 from ... import functions as fn
 from .. ItemGroup import ItemGroup
 from .. GraphicsWidget import GraphicsWidget
-import weakref
-from copy import deepcopy
 from ... import debug as debug
 from ... import getConfigOption
-import sys
 from ...Qt import isQObjectAlive
 
 __all__ = ['ViewBox']
@@ -1696,6 +1696,8 @@ class ViewBox(GraphicsWidget):
     def forgetView(vid, name):
         if ViewBox is None:     ## can happen as python is shutting down
             return
+        if QtGui.QApplication.instance() is None:
+            return
         ## Called with ID and name of view (the view itself is no longer available)
         for v in list(ViewBox.AllViews.keys()):
             if id(v) == vid:
@@ -1717,6 +1719,8 @@ class ViewBox(GraphicsWidget):
             except RuntimeError:  ## signal is already disconnected.
                 pass
             except TypeError:  ## view has already been deleted (?)
+                pass
+            except AttributeError:  # PySide has deleted signal
                 pass
             
     def locate(self, item, timeout=3.0, children=False):
