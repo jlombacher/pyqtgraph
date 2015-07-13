@@ -712,9 +712,9 @@ class ROI(GraphicsObject):
             ev.accept()
         elif int(ev.button() & self.acceptedMouseButtons()) > 0:
             ev.accept()
-            self.sigClicked.emit(self, ev)
         else:
             ev.ignore()
+        self.sigClicked.emit(self, ev)
 
     def cancelMove(self):
         self.isMoving = False
@@ -1904,30 +1904,52 @@ class PolyLineROI(ROI):
 
     # pos should be in this item's coordinate system
     def segmentClicked(self, segment, ev=None, pos=None):
+        print('segment', segment)
+        print('segments', self.segments)
         if ev is not None:
             pos = segment.mapToParent(ev.pos())
         elif pos is not None:
             pos = pos
         else:
             raise Exception("Either an event or a position must be given.")
-        # h1 = segment.handles[0]['item']
+
+        print('position', pos)
+        h1 = segment.handles[0]['item']
         h2 = segment.handles[1]['item']
+        
+        i = self.segments.index(segment)
+        print('i', i)
+        h3 = self.addFreeHandle(pos, index=self.indexOfHandle(h2))
+        self.addSegment(h3, h2, index=i + 1)
+        segment.replaceHandle(h2, h3)
 
-        # Why does double Click evnet pos delivers the wrong coordinates???
-        if ev is None or not self.addHandleDoubleClick or ev.double():
-            pos = self.singleClickPos
+        # if ev is not None:
+        #     pos = segment.mapToParent(ev.pos())
+        # elif pos is not None:
+        #     pos = pos
+        # else:
+        #     raise Exception("Either an event or a position must be given.")
+        # # h1 = segment.handles[0]['item']
+        # h2 = segment.handles[1]['item']
 
-            i = self.segments.index(segment)
-            h3 = self.addFreeHandle(pos, index=self.indexOfHandle(h2))
-            self.addSegment(h3, h2, index=i + 1)
-            segment.replaceHandle(h2, h3)
-        else:
-            self.singleClickPos = pos
-            self.mouseClickEvent(ev)
+        # # Why does double Click evnet pos delivers the wrong coordinates???
+        # if ev is None or not self.addHandleDoubleClick or ev.double():
+        #     pos = self.singleClickPos
+
+        #     i = self.segments.index(segment)
+        #     h3 = self.addFreeHandle(pos, index=self.indexOfHandle(h2))
+        #     self.addSegment(h3, h2, index=i + 1)
+        #     segment.replaceHandle(h2, h3)
+        # else:
+        #     self.singleClickPos = pos
+        #     self.mouseClickEvent(ev)
 
     def removeHandle(self, handle, updateSegments=True):
         ROI.removeHandle(self, handle)
-        handle.sigRemoveRequested.disconnect(self.removeHandle)
+        try:
+            handle.sigRemoveRequested.disconnect(self.removeHandle)
+        except TypeError:
+            pass
 
         if not updateSegments:
             return
