@@ -86,8 +86,8 @@ class Build(build.build):
             open(initfile, 'w').write(re.sub(r"__version__ = .*", "__version__ = '%s'" % version, data))
             buildVersion = version
         except:
-            if forcedVersion:
-                raise
+            #if forcedVersion:
+            #    raise
             buildVersion = initVersion
             sys.stderr.write("Warning: Error occurred while setting version string in build path. "
                              "Installation will use the original version string "
